@@ -24,6 +24,7 @@ static XButtonEvent mouse;
 static Window       root;
 
 long past;
+int gravity = 0;
 
 static void (*events[LASTEvent])(XEvent *e) = {
     [ButtonPress]      = button_press,
@@ -182,6 +183,10 @@ void win_fs(const Arg arg) {
     recreateWindow(cl->physicsId, cur->wx, cur->wy, cur->ww, cur->wh);
 }
 
+void win_gravity(const Arg arg) {
+    gravity = !gravity;
+}
+
 void win_to_ws(const Arg arg) {
     int tmp = ws;
 
@@ -316,7 +321,8 @@ int main(void) {
     physicsInit(sw, sh);
 
     while (1) {
-        physicsUpdate(16, d);
+        if (gravity)
+            physicsUpdate(16, d);
 
         while (XPending(d)) {
             XNextEvent(d, &ev);

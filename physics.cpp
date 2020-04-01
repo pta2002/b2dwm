@@ -73,7 +73,6 @@ extern "C" {
 
             double x = e->GetPosition().x * 10 - (double) attrs.width / 2;
             double y = e->GetPosition().y * 10 - (double) attrs.height / 2;
-            printf("Body position: %f (%f) %f (%f)\n", e->GetPosition().x, x, e->GetPosition().y, y);
 
             XMoveWindow(d, element.second.window, x, y);
         }
@@ -97,8 +96,6 @@ extern "C" {
         fixtureDef.restitution = 0.5;
 
         windowBody->CreateFixture(&fixtureDef);
-
-        printf("Body velocity: %f (%d) %f (%d) \n", windowBody->GetLinearVelocity().x, attr.x, windowBody->GetLinearVelocity().y, attr.y);
 
         windowBodies[lastFree] = (WinCapsule) { .body = windowBody, .window = w };
 

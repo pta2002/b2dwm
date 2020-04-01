@@ -52,6 +52,7 @@ void win_kill(const Arg arg);
 void win_prev(const Arg arg);
 void win_next(const Arg arg);
 void win_to_ws(const Arg arg);
+void win_gravity(const Arg arg);
 void ws_go(const Arg arg);
 
 // Physics
