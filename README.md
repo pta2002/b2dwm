@@ -1,30 +1,8 @@
-# sowm (*Simple Opinionated Window Manager*)
+# b2dwm ("Box2D Window Manager")
 
-<a href="https://user-images.githubusercontent.com/6799467/66687576-9747c200-ec72-11e9-947d-5b96753eab03.jpg"><img src="https://user-images.githubusercontent.com/6799467/66687576-9747c200-ec72-11e9-947d-5b96753eab03.jpg" width="43%" align="right"></a>
+Ever thought floating window managers were too unrealistic? Well, me neither, but here's the solution!
 
-An itsy bitsy floating window manager (*220~ sloc / 24kb compiled!*).
-
-- Floating only.
-- Fullscreen toggle.
-- Window centering.
-- Mix of mouse and keyboard workflow.
-- Focus with cursor.
-- Rounded corners (*[through patch](https://github.com/dylanaraps/sowm/pull/58)*)
-- Titlebars (*[through patch](https://github.com/dylanaraps/sowm/pull/57)*)
-
-<a href="https://user-images.githubusercontent.com/6799467/66687814-8cd9f800-ec73-11e9-97b8-6ae77876bd1b.jpg"><img src="https://user-images.githubusercontent.com/6799467/66687814-8cd9f800-ec73-11e9-97b8-6ae77876bd1b.jpg" width="43%" align="right"></a>
-
-- Alt-Tab window focusing.
-- All windows die on exit.
-- No window borders.
-- [No ICCCM](https://web.archive.org/web/20190617214524/https://raw.githubusercontent.com/kfish/xsel/1a1c5edf0dc129055f7764c666da2dd468df6016/rant.txt).
-- No EWMH.
-- etc etc etc
-
-
-<br>
-
-Patches available here: https://github.com/dylanaraps/sowm/pulls
+This is based off of sowm, I just patched box2D in!
 
 ## Default Keybindings
 
@@ -41,6 +19,7 @@ Patches available here: https://github.com/dylanaraps/sowm/pulls
 | `MOD4` + `1-9`             | desktop swap           |
 | `MOD4` + `Shift` +`1-9`    | send window to desktop |
 | `MOD1` + `TAB` (*alt-tab*) | focus cycle            |
+| `MOD4` + `g`               | toggle gravity         |
 
 **Programs**
 
@@ -60,31 +39,19 @@ Patches available here: https://github.com/dylanaraps/sowm/pulls
 ## Dependencies
 
 - `xlib` (*usually `libX11`*).
+- `box2d`
 
 
 ## Installation
 
 1) Copy `config.def.h` to `config.h` and modify it to suit your needs.
-2) Run `make` to build `sowm`.
+2) Run `make` to build `b2dwm`.
 3) Copy it to your path or run `make install`.
     - `DESTDIR` and `PREFIX` are supported.
-4) (Optional) Apply patch with `git apply patches/patch-name`
-    - In case of applying multiple patches, it has to be done **manually**.
-
-If you are using GDM, save the following to `/usr/share/xsessions/sowm.desktop`. It is still recommended to start `sowm` from `.xinitrc` or through
-[your own xinit implementation](https://github.com/dylanaraps/bin/blob/dfd9a9ff4555efb1cc966f8473339f37d13698ba/x).
-
-```
-[Desktop Entry]
-Name=sowm
-Comment=This session runs sowm as desktop manager
-Exec=sowm
-Type=Application
-```
-
 
 ## Thanks
 
+- sowm
 - 2bwm
 - SmallWM
 - berry

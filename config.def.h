@@ -9,7 +9,7 @@
 #define MOD Mod4Mask
 
 const char* menu[]    = {"dmenu_run",      0};
-const char* term[]    = {"st",             0};
+const char* term[]    = {"termite",        0};
 const char* scrot[]   = {"scr",            0};
 const char* briup[]   = {"bri", "10", "+", 0};
 const char* bridown[] = {"bri", "10", "-", 0};
@@ -22,6 +22,7 @@ static struct key keys[] = {
     {MOD,      XK_q,   win_kill,   {0}},
     {MOD,      XK_c,   win_center, {0}},
     {MOD,      XK_f,   win_fs,     {0}},
+    {MOD,      XK_g,   win_gravity,{0}},
 
     {Mod1Mask,           XK_Tab, win_next,   {0}},
     {Mod1Mask|ShiftMask, XK_Tab, win_prev,   {0}},

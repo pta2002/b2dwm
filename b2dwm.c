@@ -70,7 +70,7 @@ void notify_motion(XEvent *e) {
         wy + (mouse.button == 1 ? yd : 0),
         MAX(1, ww + (mouse.button == 3 ? xd : 0)),
         MAX(1, wh + (mouse.button == 3 ? yd : 0)));
-    
+
     for win if (c->w == mouse.subwindow) {
         recreateWindow(c->physicsId, wx + (mouse.button == 1 ? xd : 0),
                                      wy + (mouse.button == 1 ? yd : 0),
