@@ -28,7 +28,7 @@ struct key {
 
 typedef struct client {
     struct client *next, *prev;
-    int f, wx, wy;
+    int f, wx, wy, physicsId;
     unsigned int ww, wh;
     Window w;
 } client;
@@ -53,5 +53,11 @@ void win_prev(const Arg arg);
 void win_next(const Arg arg);
 void win_to_ws(const Arg arg);
 void ws_go(const Arg arg);
+
+// Physics
+void physicsInit(int w, int h);
+void physicsUpdate(int dt, Display *d);
+int addWindow(Display *d, Window w, int world);
+void removeWindow(int id);
 
 static int xerror() { return 0; }

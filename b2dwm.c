@@ -1,4 +1,6 @@
-// sowm - An itsy bitsy floating window manager.
+// b2dwm - an abomination
+#define _POSIX_C_SOURCE 199309L
+#define _BSD_SOURCE
 
 #include <X11/Xlib.h>
 #include <X11/XF86keysym.h>
@@ -7,8 +9,11 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
+#include <stdio.h>
+#include <time.h>
+#include <unistd.h>
 
-#include "sowm.h"
+#include "b2dwm.h"
 
 static client       *list = {0}, *ws_list[10] = {0}, *cur;
 static int          ws = 1, sw, sh, wx, wy, numlock = 0;
@@ -17,6 +22,8 @@ static unsigned int ww, wh;
 static Display      *d;
 static XButtonEvent mouse;
 static Window       root;
+
+long past;
 
 static void (*events[LASTEvent])(XEvent *e) = {
     [ButtonPress]      = button_press,
@@ -91,6 +98,9 @@ void win_add(Window w) {
     if (!(c = (client *) calloc(1, sizeof(client))))
         exit(1);
 
+    XMoveWindow(d, w, 0, 264);
+    XResizeWindow(d, w, 100, 100);
+
     c->w = w;
 
     if (list) {
@@ -103,6 +113,8 @@ void win_add(Window w) {
         list = c;
         list->prev = list->next = list;
     }
+
+    c->physicsId = addWindow(d, w, ws);
 
     ws_save(ws);
 }
@@ -117,6 +129,8 @@ void win_del(Window w) {
     if (list == x)    list = x->next;
     if (x->next)      x->next->prev = x->prev;
     if (x->prev)      x->prev->next = x->next;
+
+    removeWindow(x->physicsId);
 
     free(x);
     ws_save(ws);
@@ -273,6 +287,18 @@ int main(void) {
     XDefineCursor(d, root, XCreateFontCursor(d, 68));
     input_grab(root);
 
-    while (1 && !XNextEvent(d, &ev))
-        if (events[ev.type]) events[ev.type](&ev);
+    physicsInit(sw, sh);
+
+    while (1) {
+        physicsUpdate(16, d);
+
+        while (XPending(d)) {
+            XNextEvent(d, &ev);
+            printf("Got event, there are %d pending\n", XPending(d));
+            if (events[ev.type])
+                events[ev.type](&ev);
+        }
+
+        usleep(16000);
+    }
 }

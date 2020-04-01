@@ -1,6 +1,11 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <X11/Xlib.h>
+#include <X11/XF86keysym.h>
+#include <X11/keysym.h>
+#include <X11/XKBlib.h>
+
 #define MOD Mod4Mask
 
 const char* menu[]    = {"dmenu_run",      0};
