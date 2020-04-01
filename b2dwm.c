@@ -69,6 +69,13 @@ void notify_motion(XEvent *e) {
         wy + (mouse.button == 1 ? yd : 0),
         MAX(1, ww + (mouse.button == 3 ? xd : 0)),
         MAX(1, wh + (mouse.button == 3 ? yd : 0)));
+    
+    for win if (c->w == mouse.subwindow) {
+        recreateWindow(c->physicsId, wx + (mouse.button == 1 ? xd : 0),
+                                     wy + (mouse.button == 1 ? yd : 0),
+                                     MAX(1, ww + (mouse.button == 3 ? xd : 0)),
+                                     MAX(1, wh + (mouse.button == 3 ? yd : 0)));
+    }
 }
 
 void key_press(XEvent *e) {
@@ -159,6 +166,9 @@ void win_center(const Arg arg) {
 
 void win_fs(const Arg arg) {
     if (!cur) return;
+    client *cl;
+
+    for win if (c->w == cur->w) cl = c;
 
     if ((cur->f = cur->f ? 0 : 1)) {
         win_size(cur->w, &cur->wx, &cur->wy, &cur->ww, &cur->wh);
@@ -167,6 +177,9 @@ void win_fs(const Arg arg) {
     } else {
         XMoveResizeWindow(d, cur->w, cur->wx, cur->wy, cur->ww, cur->wh);
     }
+
+    win_size(cur->w, &cur->wx, &cur->wy, &cur->ww, &cur->wh);
+    recreateWindow(cl->physicsId, cur->wx, cur->wy, cur->ww, cur->wh);
 }
 
 void win_to_ws(const Arg arg) {
