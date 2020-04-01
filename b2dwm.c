@@ -98,9 +98,6 @@ void win_add(Window w) {
     if (!(c = (client *) calloc(1, sizeof(client))))
         exit(1);
 
-    XMoveWindow(d, w, 0, 264);
-    XResizeWindow(d, w, 100, 100);
-
     c->w = w;
 
     if (list) {
@@ -114,9 +111,9 @@ void win_add(Window w) {
         list->prev = list->next = list;
     }
 
-    c->physicsId = addWindow(d, w, ws);
-
     ws_save(ws);
+
+    c->physicsId = addWindow(d, w, ws);
 }
 
 void win_del(Window w) {
@@ -141,10 +138,21 @@ void win_kill(const Arg arg) {
 }
 
 void win_center(const Arg arg) {
+    client *cl;
+
     if (!cur) return;
 
+    for win if (c->w == cur->w) cl = c;
+
+    if (!cl) return;
+
     win_size(cur->w, &(int){0}, &(int){0}, &ww, &wh);
-    XMoveWindow(d, cur->w, (sw - ww) / 2, (sh - wh) / 2);
+
+    int x = (sw - ww) / 2;
+    int y = (sh - wh) / 2;
+
+    XMoveWindow(d, cur->w, x, y);
+    recreateWindow(cl->physicsId, x, y, ww, wh);
 }
 
 void win_fs(const Arg arg) {
@@ -294,7 +302,6 @@ int main(void) {
 
         while (XPending(d)) {
             XNextEvent(d, &ev);
-            printf("Got event, there are %d pending\n", XPending(d));
             if (events[ev.type])
                 events[ev.type](&ev);
         }

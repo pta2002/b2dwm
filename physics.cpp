@@ -8,7 +8,7 @@ typedef struct WinCapsule {
     Window window;
 } WinCapsule;
 
-b2Vec2 grav(0.0f, -1000);
+b2Vec2 grav(0.0f, -5000);
 double sh, sw;
 
 std::unordered_map<int, WinCapsule> windowBodies;
@@ -49,20 +49,17 @@ extern "C" {
                    *rightBody = worlds[i].CreateBody(&rightBodyDef);
 
             b2PolygonShape groundBox, leftBox, rightBox;
-            groundBox.SetAsBox(sh / 20, 5);
-            leftBox.SetAsBox(0.05f, sw / 20);
-            rightBox.SetAsBox(0.05f, sw / 20);
+            groundBox.SetAsBox(sh / 20, 0);
+            leftBox.SetAsBox(0, sw / 20);
+            rightBox.SetAsBox(0, sw / 20);
 
             groundBody->CreateFixture(&groundBox, 0.0f);
             leftBody->CreateFixture(&leftBox, 0.0f);
             rightBody->CreateFixture(&rightBox, 0.0f);
-
-            printf("Created world for workspace #%d\n", i);
         }
     }
 
     void physicsUpdate(int dt, Display *d) {
-        printf("Called physics update %d\n", dt);
         for (int w = 0; w < 10; w++) {
             worlds[w].Step(0.0016, 8, 3);
         }
@@ -73,15 +70,12 @@ extern "C" {
             XGetWindowAttributes(d, element.second.window, &attrs);
             b2Body *e = element.second.body;
 
-            int x = e->GetPosition().x * 10;
-            int y = -e->GetPosition().y * 10;
+            int x = e->GetPosition().x * 10 - attrs.width / 2;
+            int y = -e->GetPosition().y * 10 - attrs.height / 2;
+            printf("Body position: %f (%d) %f (%d)\n", e->GetPosition().x, x, e->GetPosition().y, y);
 
-
-            printf("Moving window to %d %d\n", x, y);
-            printf("Window was at %d %d\n", attrs.x, attrs.y);
             XMoveWindow(d, element.second.window, x, y);
         }
-        printf("---\n");
     }
 
     int addWindow(Display *d, Window w, int world) {
@@ -90,7 +84,7 @@ extern "C" {
 
         b2BodyDef bodyDef;
         bodyDef.type = b2_dynamicBody;
-        bodyDef.position.Set(attr.x / 10, -attr.y / 10);
+        bodyDef.position.Set(attr.x / 10 + attr.width / 20, -attr.y / 10 + attr.height / 20);
         bodyDef.fixedRotation = true;
         b2Body *windowBody = worlds[world].CreateBody(&bodyDef);
         b2PolygonShape dynamicBox;
@@ -103,9 +97,9 @@ extern "C" {
 
         windowBody->CreateFixture(&fixtureDef);
 
-        windowBodies[lastFree] = (WinCapsule) { .body = windowBody, .window = w };
+        printf("Body position: %f (%d) %f (%d) \n", windowBody->GetPosition().x, attr.x, windowBody->GetPosition().y, attr.y);
 
-        printf("Added a window!\n");
+        windowBodies[lastFree] = (WinCapsule) { .body = windowBody, .window = w };
 
         return lastFree++;
     }
@@ -114,5 +108,26 @@ extern "C" {
         b2Body *b = windowBodies[id].body;
         b->GetWorld()->DestroyBody(b);
         windowBodies.erase(id);
+    }
+
+    void recreateWindow(int id, int x, int y, int w, int h) {
+        b2Fixture *f = windowBodies[id].body->GetFixtureList();
+        b2FixtureDef fixtureDef;
+        fixtureDef.friction = f->GetFriction();
+        fixtureDef.restitution = f->GetRestitution();
+        fixtureDef.shape = f->GetShape();
+        fixtureDef.density = f->GetDensity();
+        
+        b2BodyDef b;
+        b.type = b2_dynamicBody;
+        b.position.Set(x / 10 + w / 20, -y / 10 + h / 20);
+        b.fixedRotation = true;
+
+        b2World *world = windowBodies[id].body->GetWorld();
+        b2Body *body = world->CreateBody(&b);
+        body->CreateFixture(&fixtureDef);
+
+        world->DestroyBody(windowBodies[id].body);
+        windowBodies[id].body = body;
     }
 }
