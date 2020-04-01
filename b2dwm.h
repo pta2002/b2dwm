@@ -59,5 +59,6 @@ void physicsInit(int w, int h);
 void physicsUpdate(int dt, Display *d);
 int addWindow(Display *d, Window w, int world);
 void removeWindow(int id);
+void recreateWindow(int id, float, float, float, float);
 
 static int xerror() { return 0; }

@@ -8,7 +8,7 @@ typedef struct WinCapsule {
     Window window;
 } WinCapsule;
 
-b2Vec2 grav(0.0f, -5000);
+b2Vec2 grav(0, 5000);
 double sh, sw;
 
 std::unordered_map<int, WinCapsule> windowBodies;
@@ -40,25 +40,26 @@ extern "C" {
             b2BodyDef groundBodyDef;
             b2BodyDef leftBodyDef;
             b2BodyDef rightBodyDef;
-            groundBodyDef.position.Set(0.0f, -sh / 10);
-            leftBodyDef.position.Set(-sh / 10, 0.0f);
+            groundBodyDef.position.Set(0.0f, sh / 10);
+            leftBodyDef.position.Set(sh / 10, 0.0f);
             rightBodyDef.position.Set(sh / 10, 0.0f);
 
-            b2Body *groundBody = worlds[i].CreateBody(&groundBodyDef),
-                   *leftBody = worlds[i].CreateBody(&leftBodyDef),
-                   *rightBody = worlds[i].CreateBody(&rightBodyDef);
+            b2Body *groundBody = worlds[i].CreateBody(&groundBodyDef);
+                //    *leftBody = worlds[i].CreateBody(&leftBodyDef),
+                //    *rightBody = worlds[i].CreateBody(&rightBodyDef);
 
             b2PolygonShape groundBox, leftBox, rightBox;
-            groundBox.SetAsBox(sh / 20, 0);
-            leftBox.SetAsBox(0, sw / 20);
-            rightBox.SetAsBox(0, sw / 20);
+            groundBox.SetAsBox(10e6, 0);
+            // leftBox.SetAsBox(0, sw / 20);
+            // rightBox.SetAsBox(0, sw / 20);
 
             groundBody->CreateFixture(&groundBox, 0.0f);
-            leftBody->CreateFixture(&leftBox, 0.0f);
-            rightBody->CreateFixture(&rightBox, 0.0f);
+            // leftBody->CreateFixture(&leftBox, 0.0f);
+            // rightBody->CreateFixture(&rightBox, 0.0f);
         }
     }
 
+// TODO have Y coordinates match on screen, just have gravity upside down
     void physicsUpdate(int dt, Display *d) {
         for (int w = 0; w < 10; w++) {
             worlds[w].Step(0.0016, 8, 3);
@@ -70,9 +71,9 @@ extern "C" {
             XGetWindowAttributes(d, element.second.window, &attrs);
             b2Body *e = element.second.body;
 
-            int x = e->GetPosition().x * 10 - attrs.width / 2;
-            int y = -e->GetPosition().y * 10 - attrs.height / 2;
-            printf("Body position: %f (%d) %f (%d)\n", e->GetPosition().x, x, e->GetPosition().y, y);
+            double x = e->GetPosition().x * 10 - (double) attrs.width / 2;
+            double y = e->GetPosition().y * 10 - (double) attrs.height / 2;
+            printf("Body position: %f (%f) %f (%f)\n", e->GetPosition().x, x, e->GetPosition().y, y);
 
             XMoveWindow(d, element.second.window, x, y);
         }
@@ -84,7 +85,7 @@ extern "C" {
 
         b2BodyDef bodyDef;
         bodyDef.type = b2_dynamicBody;
-        bodyDef.position.Set(attr.x / 10 + attr.width / 20, -attr.y / 10 + attr.height / 20);
+        bodyDef.position.Set(attr.x / 10 + attr.width / 20, attr.y / 10 + attr.height / 20);
         bodyDef.fixedRotation = true;
         b2Body *windowBody = worlds[world].CreateBody(&bodyDef);
         b2PolygonShape dynamicBox;
@@ -97,7 +98,7 @@ extern "C" {
 
         windowBody->CreateFixture(&fixtureDef);
 
-        printf("Body position: %f (%d) %f (%d) \n", windowBody->GetPosition().x, attr.x, windowBody->GetPosition().y, attr.y);
+        printf("Body velocity: %f (%d) %f (%d) \n", windowBody->GetLinearVelocity().x, attr.x, windowBody->GetLinearVelocity().y, attr.y);
 
         windowBodies[lastFree] = (WinCapsule) { .body = windowBody, .window = w };
 
@@ -110,17 +111,19 @@ extern "C" {
         windowBodies.erase(id);
     }
 
-    void recreateWindow(int id, int x, int y, int w, int h) {
+    void recreateWindow(int id, float x, float y, float w, float h) {
         b2Fixture *f = windowBodies[id].body->GetFixtureList();
         b2FixtureDef fixtureDef;
         fixtureDef.friction = f->GetFriction();
         fixtureDef.restitution = f->GetRestitution();
-        fixtureDef.shape = f->GetShape();
+        b2PolygonShape shape;
+        shape.SetAsBox(w / 20, h / 20);
+        fixtureDef.shape = &shape;
         fixtureDef.density = f->GetDensity();
         
         b2BodyDef b;
         b.type = b2_dynamicBody;
-        b.position.Set(x / 10 + w / 20, -y / 10 + h / 20);
+        b.position.Set(x / 10 + w / 20, y / 10 + h / 20);
         b.fixedRotation = true;
 
         b2World *world = windowBodies[id].body->GetWorld();

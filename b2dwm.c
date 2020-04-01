@@ -146,6 +146,8 @@ void win_center(const Arg arg) {
 
     if (!cl) return;
 
+    // XResizeWindow(d, cur->w, 200, 300);
+    // ww = 200, wh = 300;
     win_size(cur->w, &(int){0}, &(int){0}, &ww, &wh);
 
     int x = (sw - ww) / 2;
@@ -228,6 +230,9 @@ void configure_request(XEvent *e) {
         .sibling    = ev->above,
         .stack_mode = ev->detail
     });
+
+    for win if (c->w == ev->window)
+        recreateWindow(c->physicsId, ev->x, ev->y, ev->width, ev->height);
 }
 
 void map_request(XEvent *e) {

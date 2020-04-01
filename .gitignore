@@ -1,3 +1,5 @@
-sowm
-sowm.o
 config.h
+.idea/
+.vscode/
+b2dwm
+*.o
