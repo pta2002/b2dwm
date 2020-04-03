@@ -25,6 +25,7 @@ static Window       root;
 
 long past;
 int gravity = 0;
+int running = 1;
 
 static void (*events[LASTEvent])(XEvent *e) = {
     [ButtonPress]      = button_press,
@@ -267,6 +268,10 @@ void map_request(XEvent *e) {
     win_focus(list->prev);
 }
 
+void quit(const Arg arg) {
+   running = 0;
+}
+
 void run(const Arg arg) {
     if (fork()) return;
     if (d) close(ConnectionNumber(d));
@@ -320,7 +325,7 @@ int main(void) {
 
     physicsInit(sw, sh);
 
-    while (1) {
+    while (running) {
         if (gravity)
             physicsUpdate(16, d);
 
