@@ -4,6 +4,8 @@ Ever thought floating window managers were too unrealistic? Well, me neither, bu
 
 This is based off of sowm, I just patched box2D in!
 
+[Video here](https://www.reddit.com/r/unixporn/comments/ft8iow/b2dwm_i_think_floating_window_managers_arent_very/)
+
 ## Default Keybindings
 
 **Window Management**
